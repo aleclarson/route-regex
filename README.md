@@ -1,4 +1,4 @@
-# route-regex v1.0.0
+# route-regex v1.1.0
 
 Isomorphic route matching.
 
