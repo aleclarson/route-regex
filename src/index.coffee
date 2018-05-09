@@ -15,6 +15,12 @@ routeRegex = (path) ->
   if path[0] isnt '/'
     throw Error 'Route path must begin with /'
 
+  if path is '/'
+    path = /^\/$/
+    path.match = path.test
+    path.params = null
+    return path
+
   ch = 0       # The last matched character index.
   params = []  # Parameter names
 
