@@ -84,9 +84,9 @@ matchParams = (path) ->
   else null
 
 getParams = (values, names) ->
-  params = {}
+  params = 0: values[0]
   for i in [1...values.length]
-    params[names[i - 1] or i - 1] = values[i]
+    params[names[i - 1] or i] = values[i]
   return params
 
 # This function assumes parens are balanced.
