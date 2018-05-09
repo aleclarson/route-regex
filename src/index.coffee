@@ -1,5 +1,5 @@
 
-paramRE = /:(\w+)(\()?|\(|\./g
+paramRE = /:(\w+)|\(|\./g
 parenRE = /\(|\)/g
 skipRE = /\(\?(:|=)/
 
@@ -33,11 +33,15 @@ routeRegex = (path) ->
 
       when ':' # named parameter
         params.push m[1]
-        if m[2]
-          index = 1 + findClosingParen path, ch = index
-          source += m = path.slice ch - 1, index
+
+        # Use the default pattern unless a non-skip capture group exists.
+        if path[index] isnt '(' or skipRE.test path.substr index, 3
+          source += '([^./-]+)'
+        else
+          ch = index
+          index = 1 + findClosingParen path, ch + 1
+          source += m = path.slice ch, index
           matchCaptureGroups m.slice(1, -1), params
-        else source += '([^./-]+)'
 
       when '(' # unnamed parameter
         index = 1 + findClosingParen path, ch = index
