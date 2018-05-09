@@ -1,6 +1,7 @@
 
 paramRE = /:(\w+)(\()?|\(|\./g
 parenRE = /\(|\)/g
+skipRE = /\(\?(:|=)/
 
 routeRegex = (path) ->
 
@@ -71,7 +72,7 @@ matchCaptureGroups = (str, params) ->
   while m = parenRE.exec str
     if m[0] is '('
       ch = m.index
-      if skip is 0 and str.slice(ch + 1, ch + 3) isnt '?:'
+      if skip is 0 and !skipRE.test str.substr ch, 3
         params.push params.length + 1
       else skip += 1
     else skip -= 1 if skip isnt 0
