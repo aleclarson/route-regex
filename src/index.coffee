@@ -16,7 +16,7 @@ routeRegex = (path) ->
     throw Error 'Route path must begin with /'
 
   if path is '/'
-    path = /^\/$/
+    path = /^\/(?=[#?]|$)/
     path.match = path.test
     path.params = null
     return path
@@ -24,7 +24,11 @@ routeRegex = (path) ->
   ch = 0       # The last matched character index.
   params = []  # Parameter names
 
-  source = ''
+  # This comes in handy after the loop.
+  endsWithLookahead = false
+
+  # Build up the regex pattern!
+  source = '^'
   while true
     m = paramRE.exec path
 
@@ -54,13 +58,20 @@ routeRegex = (path) ->
         source += m = path.slice ch - 1, index
         matchCaptureGroups m, params
 
+        # Check if the path ends with a lookahead.
+        if index is path.length and path.substr(ch, 2) is '?='
+          endsWithLookahead = true
+
       when '.' # dot literal
         source += '\\.'
 
     # Track the first unmatched character.
     paramRE.lastIndex = ch = index
 
-  path = new RegExp '^' + source + '$'
+  if !(endsWithLookahead or source.endsWith '$')
+    source += '(?=[/#?]|$)'
+
+  path = new RegExp source
   path.match = params.length and matchParams or path.test
   path.params = params.length and params or null
   path
