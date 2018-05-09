@@ -38,10 +38,10 @@ routeRegex = (path) ->
       source += path.slice ch, index
 
     break if not m
-    index += m[0].length
     switch m[0][0]
 
       when ':' # named parameter
+        index += m[0].length
         params.push m[1]
 
         # Use the default pattern unless a non-skip capture group exists.
@@ -54,7 +54,8 @@ routeRegex = (path) ->
           matchCaptureGroups m.slice(1, -1), params
 
       when '(' # unnamed parameter
-        index = 1 + findClosingParen path, ch = index
+        ch = index + 1
+        index = 1 + findClosingParen path, ch
         source += m = path.slice ch - 1, index
         matchCaptureGroups m, params
 
@@ -64,6 +65,7 @@ routeRegex = (path) ->
 
       when '.' # dot literal
         source += '\\.'
+        index++
 
     # Track the first unmatched character.
     paramRE.lastIndex = ch = index
@@ -87,6 +89,7 @@ getParams = (values, names) ->
     params[names[i - 1] or i - 1] = values[i]
   return params
 
+# This function assumes parens are balanced.
 matchCaptureGroups = (str, params) ->
   parenRE.lastIndex = 0
   skip = 0
@@ -104,7 +107,7 @@ findClosingParen = (str, i) ->
   level = 0
   while true
     unless match = parenRE.exec str
-      throw Error "Unmatched left paren in '#{str}'"
+      throw Error "Unmatched left paren in '#{str}' at index #{i}"
     if match[0] is ')'
       if level is 0
         return match.index
