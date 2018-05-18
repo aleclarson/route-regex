@@ -96,7 +96,9 @@ matchCaptureGroups = (str, params) ->
   while m = parenRE.exec str
     if m[0] is '('
       ch = m.index
-      if skip is 0 and !skipRE.test str.substr ch, 3
+      prefix = str.substr ch, 3
+      continue if prefix is '(?:'
+      if !skip and prefix isnt '(?='
         params.push params.length + 1
       else skip += 1
     else skip -= 1 if skip isnt 0
