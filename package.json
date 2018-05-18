@@ -1,6 +1,6 @@
 {
   "name": "route-regex",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "js/index",
   "devDependencies": {
     "wch-coffee": "*"
